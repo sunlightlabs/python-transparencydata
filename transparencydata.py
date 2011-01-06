@@ -32,6 +32,7 @@ class Client(object):
     def __init__(self, key):
         self.apikey = key
         self.apiurl = DEFAULT_URL
+        self.debug = False
         
     def __call__(self, **kwargs):
         
@@ -76,8 +77,9 @@ class Client(object):
             params[name] = value
 
         url = "%s?%s" % (urljoin(self.apiurl, self.endpoint), urlencode(params))
-        print url
-        return
+        if self.debug:
+            print url
+            return
         
         try:
             response = urlopen(url).read().decode()
