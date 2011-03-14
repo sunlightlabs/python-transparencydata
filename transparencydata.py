@@ -74,7 +74,7 @@ class Client(object):
             if handler:
                 value = handler(name, value, operator)
             
-            params[name] = value
+            params[name] = value.encode('utf8')
 
         url = "%s?%s" % (urljoin(self.apiurl, self.endpoint), urlencode(params))
         if self.debug:
