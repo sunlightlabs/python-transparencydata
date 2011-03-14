@@ -26,6 +26,8 @@ DEFAULT_HANDLERS = {}
 class TransparencyDataError(Exception):
     pass
 
+from api import api, DEFAULT_CYCLE
+
 # base client
 class Client(object):
     
