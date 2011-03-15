@@ -5,7 +5,7 @@ long_description = open('README.rst').read()
 
 setup(name="python-transparencydata",
       version=__version__,
-      py_modules=["transparencydata"],
+      py_modules=["transparencydata", "influenceexplorer"],
       description="Library for interacting with the Sunlight Labs Transparency Data API",
       author="Jeremy Carbaugh",
       author_email = "jcarbaugh@sunlightfoundation.com",
