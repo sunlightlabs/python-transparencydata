@@ -94,18 +94,101 @@ class Client(object):
 class ContributionsClient(Client):
     endpoint = 'contributions.json'
     parameters = (
-        'amount','contributor_ft','contributor_state','cycle',
-        'date','employer_ft','recipient_ft','recipient_state',
-        'seat','transaction_namespace','contributor_industry',
+        'contributor_state',
+        'recipient_state',
+        'cycle',
+        'for_against',
+        'contributor_industry',
+        'seat',
+        'transaction_namespace',
+        'transaction_type',
+        'contributor_ext_id',
+        'recipient_ext_id',
+        'organization_ext_id',
+        'parent_organization_ext_id',
+        'committee_ext_id',
+        'contributor_type',
+        'recipient_type',
+        'date',
+        'amount',
+        'committee_ft',
+        'contributor_ft',
+        'employer_ft',
+        'organization_ft',
+        'recipient_ft',
     )
 
 class LobbyingClient(Client):
     endpoint = 'lobbying.json'
     parameters = (
-        'amount','client_ft','client_parent_ft','filing_type',
-        'lobbyist_ft','registrant_ft','transaction_id',
-        'transaction_type','year'
+        'lobbyist_is_rep',
+        'industry',
+        'transaction_id',
+        'transaction_type',
+        'filing_type',
+        'year',
+        'issue',
+        'client_ext_id',
+        'lobbyist_ext_id', 
+        'candidate_ext_id',
+        'client_ft',
+        'client_parent_ft', 
+        'lobbyist_ft',
+        'registrant_ft',
+        'issue_ft',
     )
+
+class EarmarkClient(Client):
+    endpoint = 'earmarks.json'
+    parameters = (
+        'year',
+        'state',
+        'member_party',
+        'member_state',
+        'bill',
+        'description',
+        'city',
+        'member',
+        'recipient', 
+    )
+    
+
+class GrantsClient(Client):
+    endpoint = 'grants.json'
+    parameters = (
+        'assistance_type',
+        'fiscal_year',
+        'recipient_state', 
+        'recipient_type',
+        'agency_ft',
+        'recipient_ft',
+    )
+    
+
+class ContractsClient(Client):
+    endpoint = 'contracts.json'
+    parameters = (
+        'agency_id',
+        'contracting_agency_id',
+        'fiscal_year',
+        'place_distrct',
+        'place_state',
+        'requesting_agency_id',
+        'vendor_state',
+        'vendor_zipcode',
+        'vendor_district',
+        'vendor_duns',
+        'vendor_parent_duns',
+        'agency_name',
+        'contracting_agency_name',
+        'requesting_agency_name',
+        'vendor_name',
+        'vendor_city',
+        'obligated_amount',
+        'current_amount',
+        'maximum_amount',    
+    )
+    
 
 # main wrapper
 class TransparencyData(object):
@@ -113,3 +196,6 @@ class TransparencyData(object):
     def __init__(self, key):
         self.contributions = ContributionsClient(key)
         self.lobbying = LobbyingClient(key)
+        self.earmarks = EarmarkClient(key)
+        self.grants = GrantsClient(key)
+        self.contracts = ContractsClient(key)
