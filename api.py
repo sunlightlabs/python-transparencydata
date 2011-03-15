@@ -1,7 +1,5 @@
-from django.http import Http404
 import urllib2
 import urllib
-import re
 try:
     import json
 except ImportError:
