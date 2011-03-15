@@ -26,14 +26,13 @@ DEFAULT_HANDLERS = {}
 class TransparencyDataError(Exception):
     pass
 
-from api import DEFAULT_CYCLE
 
 # base client
 class Client(object):
     
-    def __init__(self, key):
+    def __init__(self, key, base_url=DEFAULT_URL):
         self.apikey = key
-        self.apiurl = DEFAULT_URL
+        self.apiurl = base_url
         self.debug = False
         
     def __call__(self, **kwargs):
