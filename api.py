@@ -1,13 +1,14 @@
-from BeautifulSoup import BeautifulSoup
-from django.conf import settings
 from django.http import Http404
 import urllib2
 import urllib
 import re
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
+    
 
-
-API_BASE_URL = settings.AGGREGATES_API_BASE_URL.strip('/')+'/'
+DEFAULT_URL = "http://transparencydata.com/api/1.0/"
 
 # defaults of None don't mean that there is not default or no limit--
 # it means that no parameter will be sent to the server, and the server
@@ -20,8 +21,9 @@ DEFAULT_CYCLE = "-1" # -1 will return career totals.
 
 class TransparencyDataAPI(object):
 
-    def __init__(self, base_url):
+    def __init__(self, api_key, base_url=DEFAULT_URL):
         self.base_url = base_url
+        self.api_key = api_key
 
     def _get_url_json(self, path, cycle=None, limit=None, **params):
         """ Low level call that just adds the API key, retrieves the URL and parses the JSON. """
@@ -31,9 +33,7 @@ class TransparencyDataAPI(object):
         if limit:
             params.update({'limit': limit})
         
-        # TODO: this should be passed in at object creation
-        # the way it is now assumes this is the only API_KEY in the project
-        params.update({'apikey': settings.API_KEY})
+        params.update({'apikey': self.api_key})
 
         # avoid unicode errors
         if params.has_key('search'):
@@ -221,6 +221,3 @@ class TransparencyDataAPI(object):
 
     def election_districts(self, cycle=DEFAULT_CYCLE):
         return self._get_url_json('entities/race/districts.json', cycle)
-
-
-api = TransparencyDataAPI(API_BASE_URL)
