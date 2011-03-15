@@ -35,22 +35,13 @@ class TransparencyDataAPI(object):
         
         params.update({'apikey': self.api_key})
 
-        # avoid unicode errors
-        if params.has_key('search'):
-            params['search'] = params['search'].encode('ascii', 'ignore')
+        fp = urllib2.urlopen(self.base_url + path + '?' + urllib.urlencode(params))
 
-        try:
-            fp = urllib2.urlopen(self.base_url + path + '?' + urllib.urlencode(params))
+        return json.loads(fp.read())
 
-            return json.loads(fp.read())
-        except urllib2.HTTPError, e:
-            if e.code == 404:
-                raise Http404
-            else:
-                raise e
 
     def entity_search(self, query):
-        return self._get_url_json('entities.json', search=query)
+        return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
 
     _camp_fin_markers = ['contributor_count', 'recipient_count']
     _lobbying_markers = ['lobbying_count']
