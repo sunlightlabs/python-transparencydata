@@ -49,6 +49,13 @@ class SubAPI(object):
 
 class Entities(SubAPI):
     def search(self, query):
+        """
+        Return entities with names matching the given query.
+        
+        Query terms are space separated. Matches must contain all terms
+        from the query.
+        """
+        
         return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
 
     _camp_fin_markers = ['contributor_count', 'recipient_count']
@@ -57,6 +64,9 @@ class Entities(SubAPI):
     _earmark_markers = ['earmark_count']
 
     def metadata(self, entity_id):
+        
+        """Return all available metadata for the given entity."""
+        
         results = self._get_url_json('entities/%s.json' % entity_id)
 
         results['years'] = self._entity_years(results['totals'], self._camp_fin_markers + self._lobbying_markers + self._spending_markers)
@@ -76,10 +86,25 @@ class Entities(SubAPI):
             return {}
 
     def id_lookup(self, namespace, id):
+        """
+        Return the Influence Explorer entity ID based on a 3rd party ID.
+        
+        Valid namespaces include:
+            urn:crp:individual -- CRP's contributor or lobbyist ID
+            urn:crp:organization -- CRP's organization ID
+            urn:crp:recipient -- CRP's candidate ID
+            urn:crp:industry -- CRP's 3-letter category order
+            urn:crp:subindustry -- CRP's 5-letter category code
+            urn:nimsp:subindustry -- 5-letter category code added by NIMSP
+            urn:nimsp:organization -- NIMSP's organization ID
+            urn:nimsp:recipient -- NIMSP's candidate ID
+            urn:sunlight:lobbyist_registration_tracker_url -- URL of Sunlight's lobbyist registration tracker page
+        """
         return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id)
 
 
     def count(self, type=None):
+        """ Return the total count of entities. """
         params = {'count': 1}
         if type:
             params['type'] = type
@@ -87,6 +112,7 @@ class Entities(SubAPI):
 
 
     def list(self, start, end, type=None):
+        """ List all entities. """
         params = {'start': start, 'end': end}
         if type:
             params['type'] = type
@@ -95,138 +121,200 @@ class Entities(SubAPI):
 
     # top n lists
     def top_n_individuals(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the top individuals, by amount contributed. """
         return self._get_url_json('aggregates/indivs/top_%s.json' % limit, cycle)
 
     def top_n_organizations(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the top organizations, by amount contributed. """
         return self._get_url_json('aggregates/orgs/top_%s.json' % limit, cycle)
 
     def top_n_politicians(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the top politicians, by amount received. """
         return self._get_url_json('aggregates/pols/top_%s.json' % limit, cycle)
 
     def top_n_industries(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the top industries, by amount contributed. """
         return self._get_url_json('aggregates/industries/top_%s.json' % limit, cycle)
 
     def candidates_by_location(self, location, cycle=DEFAULT_CYCLE):
+        """ Internal use only. Not maintained. """
         return self._get_url_json('entities/race/%s.json' % location, cycle)
 
     def election_districts(self, cycle=DEFAULT_CYCLE):
+        """ Internal use only. Not maintained. """
         return self._get_url_json('entities/race/districts.json', cycle)
 
 
 class Politician(SubAPI):
     
     def contributors(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the top organizational contributors. """
         return self._get_url_json('aggregates/pol/%s/contributors.json' % entity_id, cycle, limit)
 
     def sectors(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Not maintained. """
         return self._get_url_json('aggregates/pol/%s/contributors/sectors.json' % entity_id, cycle, limit)
 
-
     def industries(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the top contributing industries. """
         return self._get_url_json('aggregates/pol/%s/contributors/industries.json' % entity_id, cycle, limit)
 
     def local_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return the breakdown of in-state vs. out-of-state contributions. """
         return self._get_url_json('aggregates/pol/%s/contributors/local_breakdown.json' % entity_id, cycle)
 
     def contributor_type_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return the breakdown of individual vs. organization contributions. """
         return self._get_url_json('aggregates/pol/%s/contributors/type_breakdown.json' % entity_id, cycle)
 
     def sparkline(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return sparkline data for contributions received. """
         return self._get_url_json('aggregates/pol/%s/sparkline.json' % entity_id, cycle)
 
     def earmarks(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top earmarks requested by this politician. """
         return self._get_url_json('aggregates/pol/%s/earmarks.json' % entity_id, cycle, limit)
     
     def earmarks_local_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return breakdown of earmark amount for in-state vs. out-of-state projects. """
         return self._get_url_json('aggregates/pol/%s/earmarks/local_breakdown.json' % entity_id, cycle)
 
 
 class Individual(SubAPI):    
     
     def org_recipients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
-        ''' recipients from a single individual'''
+        ''' Return the top organizations receiving contributions. '''
         return self._get_url_json('aggregates/indiv/%s/recipient_orgs.json' % entity_id, cycle, limit)
 
 
     def pol_recipients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
-        ''' recipients from a single individual'''
+        ''' Return the top politicians receiving contributions. '''
         return self._get_url_json('aggregates/indiv/%s/recipient_pols.json' % entity_id, cycle, limit)
 
     def party_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return breakdown of amount contributed to each party. """
         return self._get_url_json('aggregates/indiv/%s/recipients/party_breakdown.json' % entity_id, cycle)
 
-    # which lobbying firms did this indiv work for
     def registrants(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return the lobbying firms that employed the individual.
+        
+        Only return data for individuals that are registered lobbyists.
+        """
+        
         return self._get_url_json('aggregates/indiv/%s/registrants.json' % entity_id, cycle, limit)
 
-    # issues this individual lobbied on
     def issues(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return the top issues the individual lobbied on.
+        
+        Only return data for individuals that are registered lobbyists.
+        """
         return self._get_url_json('aggregates/indiv/%s/issues.json' % entity_id, cycle, limit)
 
-    # who were the clients of the firms this indiv worked for
     def clients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return the clients the individual was contracted to work for.
+        
+        Only return data for individuals that are registered lobbyists.
+        """
         return self._get_url_json('aggregates/indiv/%s/clients.json' % entity_id, cycle, limit)
 
     def sparkline(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return sparkline data for contributions. """
         return self._get_url_json('aggregates/indiv/%s/sparkline.json' % entity_id, cycle)
 
     
 class Organization(SubAPI):
+    
+    """ Methods related to organizations or industries. """
 
     def recipients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top politicians receiving contributions. """
         return self._get_url_json('aggregates/org/%s/recipients.json' % entity_id, cycle, limit)
 
     def party_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return breakdown of amount contributed to each party. """
         return self._get_url_json('aggregates/org/%s/recipients/party_breakdown.json' % entity_id, cycle)
 
-
     def level_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return breakdown of amount contributed to state vs. federal races. """
         return self._get_url_json('aggregates/org/%s/recipients/level_breakdown.json' % entity_id, cycle)
 
-    # lobbying firms hired by this org
     def registrants(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
-        ''' check to see if the entity hired any lobbyists'''
+        '''
+        Return lobbying firms hired.
+        
+        Only return data if organization is a client of lobbying firms.
+        '''
         return self._get_url_json('aggregates/org/%s/registrants.json' % entity_id, cycle, limit)
 
-    # issues this org hired lobbying for
     def issues(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return issues lobbied on.
+        
+        Only return data if organization is a client of lobbying firms.
+        """
         return self._get_url_json('aggregates/org/%s/issues.json' % entity_id, cycle, limit)
 
-    # lobbyists who lobbied for this org (?)
     def lobbyists(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return lobbyists hired.
+        
+        Only return data if organization is a client of lobbying firms.
+        """
         return self._get_url_json('aggregates/org/%s/lobbyists.json' % entity_id, cycle, limit)
 
-    # issues this org was hired to lobby for
-    def registrant_issues(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
-        return self._get_url_json('aggregates/org/%s/registrant/issues.json' % entity_id, cycle, limit)
-
-    # clients of the org as a registrant
     def registrant_clients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return clients that hired this organization to lobby.
+        
+        Only return data if organization is a lobbying firm.
+        """
         return self._get_url_json('aggregates/org/%s/registrant/clients.json' % entity_id, cycle, limit)
 
-    # lobbyists who work for this registrant (?)
+    def registrant_issues(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return issues this organization lobbied on.
+        
+        Only return data if organization is a lobbying firm.
+        """
+        return self._get_url_json('aggregates/org/%s/registrant/issues.json' % entity_id, cycle, limit)
+
     def registrant_lobbyists(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return lobbyists employed.
+        
+        Only return data if organization is a lobbying firm.
+        """        
         return self._get_url_json('aggregates/org/%s/registrant/lobbyists.json' % entity_id, cycle, limit)
 
-    # top orgs in an industry
     def industry_orgs(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return top organizations within this industry.
+        
+        Only return data if entity is an industry.
+        """
         return self._get_url_json('aggregates/industry/%s/orgs.json' % entity_id, cycle, limit)
 
     def sparkline(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return sparkline data for contributions. """
         return self._get_url_json('aggregates/org/%s/sparkline.json' % entity_id, cycle)
 
     def sparkline_by_party(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return sparkline data for contributions, broken down by recipient party. """
         return  self._get_url_json('aggregates/org/%s/sparkline_by_party.json' % entity_id, cycle)
 
     def fed_spending(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return top federal grants and contracts received.
+        
+        Matching is based on full-text search and may include incorrect matches
+        or miss records. Not appropriate for automatic aggregation.
+        """
         return self._get_url_json('aggregates/org/%s/fed_spending.json' % entity_id, cycle, limit)
 
     def earmarks(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top earmarks received by organization. """
         return self._get_url_json('aggregates/org/%s/earmarks.json' % entity_id, cycle, limit)
-
-
-
-
-
-
 
