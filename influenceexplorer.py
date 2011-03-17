@@ -19,7 +19,7 @@ DEFAULT_CYCLE = "-1" # -1 will return career totals.
 class InfluenceExplorer(object):
 
     def __init__(self, api_key, base_url=DEFAULT_URL):
-        self.base_url = base_url
+        self.base_url = base_url if base_url[-1] == '/' else base_url + '/'
         self.api_key = api_key
         self.entities = Entities(self)
         self.pol = Politician(self)
@@ -256,6 +256,14 @@ class Organization(SubAPI):
         Only return data if organization is a client of lobbying firms.
         """
         return self._get_url_json('aggregates/org/%s/issues.json' % entity_id, cycle, limit)
+    
+    def bills(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return bills lobbied on.
+   
+        Only return data if organization is a client of lobbying firms.
+        """
+        return self._get_url_json('aggregates/org/%s/bills.json' % entity_id, cycle, limit)
 
     def lobbyists(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """
@@ -280,6 +288,15 @@ class Organization(SubAPI):
         Only return data if organization is a lobbying firm.
         """
         return self._get_url_json('aggregates/org/%s/registrant/issues.json' % entity_id, cycle, limit)
+
+    def registrant_bills(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """
+        Return bill this organization lobbied on.
+        
+        Only return data if organization is a lobbying firm.
+        """
+        return self._get_url_json('aggregates/org/%s/registrant/bills.json' % entity_id, cycle, limit)
+
 
     def registrant_lobbyists(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """
