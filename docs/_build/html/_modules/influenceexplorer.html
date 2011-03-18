@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>influenceexplorer &mdash; python-transparencydata v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="python-transparencydata v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">python-transparencydata v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for influenceexplorer</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">json</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">simplejson</span> <span class="kn">as</span> <span class="nn">json</span>
+    
+<span class="kn">from</span> <span class="nn">transparencydata</span> <span class="kn">import</span> <span class="n">DEFAULT_URL</span>
+
+
+<span class="c"># defaults of None don&#39;t mean that there is not default or no limit--</span>
+<span class="c"># it means that no parameter will be sent to the server, and the server</span>
+<span class="c"># will use its own default.</span>
+<span class="n">DEFAULT_LIMIT</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="n">DEFAULT_CYCLE</span> <span class="o">=</span> <span class="s">&quot;-1&quot;</span> <span class="c"># -1 will return career totals.</span>
+
+
+<div class="viewcode-block" id="InfluenceExplorer"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.InfluenceExplorer">[docs]</a><span class="k">class</span> <span class="nc">InfluenceExplorer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">DEFAULT_URL</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="k">if</span> <span class="n">base_url</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;/&#39;</span> <span class="k">else</span> <span class="n">base_url</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pol</span> <span class="o">=</span> <span class="n">Politician</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indiv</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">org</span> <span class="o">=</span> <span class="n">Organization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_url_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Low level call that just adds the API key, retrieves the URL and parses the JSON. &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">cycle</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;cycle&#39;</span><span class="p">:</span> <span class="n">cycle</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">})</span>
+        
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&#39;apikey&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">})</span>
+
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="s">&#39;?&#39;</span> <span class="o">+</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+</div>
+<span class="k">class</span> <span class="nc">SubAPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_api</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span> <span class="o">=</span> <span class="n">main_api</span><span class="o">.</span><span class="n">_get_url_json</span>
+        
+
+<div class="viewcode-block" id="Entities"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities">[docs]</a><span class="k">class</span> <span class="nc">Entities</span><span class="p">(</span><span class="n">SubAPI</span><span class="p">):</span>
+<div class="viewcode-block" id="Entities.search"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return entities with names matching the given query.</span>
+<span class="sd">        </span>
+<span class="sd">        Query terms are space separated. Matches must contain all terms</span>
+<span class="sd">        from the query.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities.json&#39;</span><span class="p">,</span> <span class="n">search</span><span class="o">=</span><span class="n">query</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span> <span class="s">&#39;ignore&#39;</span><span class="p">))</span>
+</div>
+    <span class="n">_camp_fin_markers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;contributor_count&#39;</span><span class="p">,</span> <span class="s">&#39;recipient_count&#39;</span><span class="p">]</span>
+    <span class="n">_lobbying_markers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;lobbying_count&#39;</span><span class="p">]</span>
+    <span class="n">_spending_markers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;grant_count&#39;</span><span class="p">,</span> <span class="s">&#39;loan_count&#39;</span><span class="p">,</span> <span class="s">&#39;contract_count&#39;</span><span class="p">]</span>
+    <span class="n">_earmark_markers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;earmark_count&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Entities.metadata"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.metadata">[docs]</a>    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">):</span>
+        
+        <span class="sd">&quot;&quot;&quot;Return all available metadata for the given entity.&quot;&quot;&quot;</span>
+        
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities/</span><span class="si">%s</span><span class="s">.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">)</span>
+
+        <span class="n">results</span><span class="p">[</span><span class="s">&#39;years&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_years</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camp_fin_markers</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lobbying_markers</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spending_markers</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="s">&#39;camp_fin_years&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_years</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camp_fin_markers</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="s">&#39;lobbying_years&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_years</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lobbying_markers</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="s">&#39;spending_years&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_years</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spending_markers</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="s">&#39;earmark_years&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_years</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s">&#39;totals&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earmark_markers</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+</div>
+    <span class="k">def</span> <span class="nf">_entity_years</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">totals</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="n">years</span> <span class="o">=</span> <span class="p">[</span><span class="n">year</span> <span class="k">for</span> <span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="ow">in</span> <span class="n">totals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])</span> <span class="ow">and</span> <span class="n">year</span> <span class="o">!=</span> <span class="s">&quot;-1&quot;</span><span class="p">]</span>
+        <span class="n">years</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">years</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">years</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="n">years</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Entities.id_lookup"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.id_lookup">[docs]</a>    <span class="k">def</span> <span class="nf">id_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Influence Explorer entity ID based on a 3rd party ID.</span>
+<span class="sd">        </span>
+<span class="sd">        Valid namespaces include:</span>
+<span class="sd">            urn:crp:individual -- CRP&#39;s contributor or lobbyist ID</span>
+<span class="sd">            urn:crp:organization -- CRP&#39;s organization ID</span>
+<span class="sd">            urn:crp:recipient -- CRP&#39;s candidate ID</span>
+<span class="sd">            urn:crp:industry -- CRP&#39;s 3-letter category order</span>
+<span class="sd">            urn:crp:subindustry -- CRP&#39;s 5-letter category code</span>
+<span class="sd">            urn:nimsp:subindustry -- 5-letter category code added by NIMSP</span>
+<span class="sd">            urn:nimsp:organization -- NIMSP&#39;s organization ID</span>
+<span class="sd">            urn:nimsp:recipient -- NIMSP&#39;s candidate ID</span>
+<span class="sd">            urn:sunlight:lobbyist_registration_tracker_url -- URL of Sunlight&#39;s lobbyist registration tracker page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities/id_lookup.json&#39;</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Entities.count"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the total count of entities. &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;count&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities/list.json&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)[</span><span class="s">&#39;count&#39;</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="Entities.list"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; List all entities. &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities/list.json&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+
+    <span class="c"># top n lists</span></div>
+<div class="viewcode-block" id="Entities.top_n_individuals"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.top_n_individuals">[docs]</a>    <span class="k">def</span> <span class="nf">top_n_individuals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the top individuals, by amount contributed. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indivs/top_</span><span class="si">%s</span><span class="s">.json&#39;</span> <span class="o">%</span> <span class="n">limit</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Entities.top_n_organizations"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.top_n_organizations">[docs]</a>    <span class="k">def</span> <span class="nf">top_n_organizations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the top organizations, by amount contributed. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/orgs/top_</span><span class="si">%s</span><span class="s">.json&#39;</span> <span class="o">%</span> <span class="n">limit</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Entities.top_n_politicians"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.top_n_politicians">[docs]</a>    <span class="k">def</span> <span class="nf">top_n_politicians</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the top politicians, by amount received. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pols/top_</span><span class="si">%s</span><span class="s">.json&#39;</span> <span class="o">%</span> <span class="n">limit</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Entities.top_n_industries"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.top_n_industries">[docs]</a>    <span class="k">def</span> <span class="nf">top_n_industries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the top industries, by amount contributed. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/industries/top_</span><span class="si">%s</span><span class="s">.json&#39;</span> <span class="o">%</span> <span class="n">limit</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Entities.candidates_by_location"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.candidates_by_location">[docs]</a>    <span class="k">def</span> <span class="nf">candidates_by_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Internal use only. Not maintained. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities/race/</span><span class="si">%s</span><span class="s">.json&#39;</span> <span class="o">%</span> <span class="n">location</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Entities.election_districts"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Entities.election_districts">[docs]</a>    <span class="k">def</span> <span class="nf">election_districts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Internal use only. Not maintained. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;entities/race/districts.json&#39;</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Politician"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician">[docs]</a><span class="k">class</span> <span class="nc">Politician</span><span class="p">(</span><span class="n">SubAPI</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="Politician.contributors"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.contributors">[docs]</a>    <span class="k">def</span> <span class="nf">contributors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the top organizational contributors. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/contributors.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Politician.sectors"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.sectors">[docs]</a>    <span class="k">def</span> <span class="nf">sectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Not maintained. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/contributors/sectors.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Politician.industries"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.industries">[docs]</a>    <span class="k">def</span> <span class="nf">industries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the top contributing industries. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/contributors/industries.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Politician.local_breakdown"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.local_breakdown">[docs]</a>    <span class="k">def</span> <span class="nf">local_breakdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the breakdown of in-state vs. out-of-state contributions. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/contributors/local_breakdown.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Politician.contributor_type_breakdown"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.contributor_type_breakdown">[docs]</a>    <span class="k">def</span> <span class="nf">contributor_type_breakdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the breakdown of individual vs. organization contributions. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/contributors/type_breakdown.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Politician.sparkline"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.sparkline">[docs]</a>    <span class="k">def</span> <span class="nf">sparkline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return sparkline data for contributions received. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/sparkline.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Politician.earmarks"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.earmarks">[docs]</a>    <span class="k">def</span> <span class="nf">earmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return top earmarks requested by this politician. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/earmarks.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="Politician.earmarks_local_breakdown"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Politician.earmarks_local_breakdown">[docs]</a>    <span class="k">def</span> <span class="nf">earmarks_local_breakdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return breakdown of earmark amount for in-state vs. out-of-state projects. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/pol/</span><span class="si">%s</span><span class="s">/earmarks/local_breakdown.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Individual"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual">[docs]</a><span class="k">class</span> <span class="nc">Individual</span><span class="p">(</span><span class="n">SubAPI</span><span class="p">):</span>    
+    
+<div class="viewcode-block" id="Individual.org_recipients"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.org_recipients">[docs]</a>    <span class="k">def</span> <span class="nf">org_recipients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Return the top organizations receiving contributions. &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/recipient_orgs.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Individual.pol_recipients"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.pol_recipients">[docs]</a>    <span class="k">def</span> <span class="nf">pol_recipients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Return the top politicians receiving contributions. &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/recipient_pols.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Individual.party_breakdown"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.party_breakdown">[docs]</a>    <span class="k">def</span> <span class="nf">party_breakdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return breakdown of amount contributed to each party. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/recipients/party_breakdown.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Individual.registrants"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.registrants">[docs]</a>    <span class="k">def</span> <span class="nf">registrants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the lobbying firms that employed the individual.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data for individuals that are registered lobbyists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/registrants.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Individual.issues"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.issues">[docs]</a>    <span class="k">def</span> <span class="nf">issues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the top issues the individual lobbied on.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data for individuals that are registered lobbyists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/issues.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Individual.clients"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.clients">[docs]</a>    <span class="k">def</span> <span class="nf">clients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the clients the individual was contracted to work for.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data for individuals that are registered lobbyists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/clients.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Individual.sparkline"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Individual.sparkline">[docs]</a>    <span class="k">def</span> <span class="nf">sparkline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return sparkline data for contributions. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/indiv/</span><span class="si">%s</span><span class="s">/sparkline.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+
+    </div></div>
+<div class="viewcode-block" id="Organization"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization">[docs]</a><span class="k">class</span> <span class="nc">Organization</span><span class="p">(</span><span class="n">SubAPI</span><span class="p">):</span>
+    
+    <span class="sd">&quot;&quot;&quot; Methods related to organizations or industries. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Organization.recipients"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.recipients">[docs]</a>    <span class="k">def</span> <span class="nf">recipients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return top politicians receiving contributions. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/recipients.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.party_breakdown"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.party_breakdown">[docs]</a>    <span class="k">def</span> <span class="nf">party_breakdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return breakdown of amount contributed to each party. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/recipients/party_breakdown.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.level_breakdown"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.level_breakdown">[docs]</a>    <span class="k">def</span> <span class="nf">level_breakdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return breakdown of amount contributed to state vs. federal races. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/recipients/level_breakdown.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.registrants"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.registrants">[docs]</a>    <span class="k">def</span> <span class="nf">registrants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return lobbying firms hired.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a client of lobbying firms.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/registrants.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.issues"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.issues">[docs]</a>    <span class="k">def</span> <span class="nf">issues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return issues lobbied on.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a client of lobbying firms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/issues.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="Organization.bills"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.bills">[docs]</a>    <span class="k">def</span> <span class="nf">bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return bills lobbied on.</span>
+<span class="sd">   </span>
+<span class="sd">        Only return data if organization is a client of lobbying firms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/bills.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.lobbyists"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.lobbyists">[docs]</a>    <span class="k">def</span> <span class="nf">lobbyists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return lobbyists hired.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a client of lobbying firms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/lobbyists.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.registrant_clients"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.registrant_clients">[docs]</a>    <span class="k">def</span> <span class="nf">registrant_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return clients that hired this organization to lobby.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a lobbying firm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/registrant/clients.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.registrant_issues"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.registrant_issues">[docs]</a>    <span class="k">def</span> <span class="nf">registrant_issues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return issues this organization lobbied on.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a lobbying firm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/registrant/issues.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.registrant_bills"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.registrant_bills">[docs]</a>    <span class="k">def</span> <span class="nf">registrant_bills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return bill this organization lobbied on.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a lobbying firm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/registrant/bills.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Organization.registrant_lobbyists"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.registrant_lobbyists">[docs]</a>    <span class="k">def</span> <span class="nf">registrant_lobbyists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return lobbyists employed.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if organization is a lobbying firm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/registrant/lobbyists.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.industry_orgs"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.industry_orgs">[docs]</a>    <span class="k">def</span> <span class="nf">industry_orgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return top organizations within this industry.</span>
+<span class="sd">        </span>
+<span class="sd">        Only return data if entity is an industry.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/industry/</span><span class="si">%s</span><span class="s">/orgs.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.sparkline"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.sparkline">[docs]</a>    <span class="k">def</span> <span class="nf">sparkline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return sparkline data for contributions. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/sparkline.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.sparkline_by_party"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.sparkline_by_party">[docs]</a>    <span class="k">def</span> <span class="nf">sparkline_by_party</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return sparkline data for contributions, broken down by recipient party. &quot;&quot;&quot;</span>
+        <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/sparkline_by_party.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.fed_spending"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.fed_spending">[docs]</a>    <span class="k">def</span> <span class="nf">fed_spending</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return top federal grants and contracts received.</span>
+<span class="sd">        </span>
+<span class="sd">        Matching is based on full-text search and may include incorrect matches</span>
+<span class="sd">        or miss records. Not appropriate for automatic aggregation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/fed_spending.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Organization.earmarks"><a class="viewcode-back" href="../influenceexplorer.html#influenceexplorer.Organization.earmarks">[docs]</a>    <span class="k">def</span> <span class="nf">earmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">DEFAULT_CYCLE</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">DEFAULT_LIMIT</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return top earmarks received by organization. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url_json</span><span class="p">(</span><span class="s">&#39;aggregates/org/</span><span class="si">%s</span><span class="s">/earmarks.json&#39;</span> <span class="o">%</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">python-transparencydata v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Sunlight Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

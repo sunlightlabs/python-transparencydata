@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Influence Explorer API &mdash; python-transparencydata v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-transparencydata v1.0 documentation" href="index.html" />
+    <link rel="prev" title="Transparency Data API" href="transparencydata.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="transparencydata.html" title="Transparency Data API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-transparencydata v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-influenceexplorer">
+<span id="influence-explorer-api"></span><h1>Influence Explorer API<a class="headerlink" href="#module-influenceexplorer" title="Permalink to this headline">¶</a></h1>
+<p>The influenceexplorer module provides API wrappers for the data provided on 
+InfluenceExplorer.com.</p>
+<dl class="class">
+<dt id="influenceexplorer.InfluenceExplorer">
+<em class="property">class </em><tt class="descclassname">influenceexplorer.</tt><tt class="descname">InfluenceExplorer</tt><big>(</big><em>api_key</em>, <em>base_url='http://transparencydata.com/api/1.0/'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#InfluenceExplorer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.InfluenceExplorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides wrappers to the Influence Explorer APIs.</p>
+<p>Methods are divided into four categories. Entity methods can be accessed
+through the <tt class="docutils literal"><span class="pre">entities</span></tt> member, Politician methods through <tt class="docutils literal"><span class="pre">pol</span></tt>, Individual
+methods through <tt class="docutils literal"><span class="pre">indiv</span></tt> and Organization through <tt class="docutils literal"><span class="pre">org</span></tt>. For example:</p>
+<div class="highlight-python"><pre>api = InfluenceExplorer(&lt;your-key-here&gt;)
+boehner_id = api.entities.search('john boehner')[1]['id]
+print api.pol.industries(boehner_id)</pre>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="influenceexplorer.Entities">
+<em class="property">class </em><tt class="descclassname">influenceexplorer.</tt><tt class="descname">Entities</tt><a class="reference internal" href="_modules/influenceexplorer.html#Entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods related to searching, listing and ranking entities.</p>
+<p>Accessed as <tt class="docutils literal"><span class="pre">InfluenceExplorer.entities</span></tt>.</p>
+<dl class="method">
+<dt id="influenceexplorer.Entities.candidates_by_location">
+<tt class="descname">candidates_by_location</tt><big>(</big><em>location</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.candidates_by_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.candidates_by_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal use only. Not maintained.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.count">
+<tt class="descname">count</tt><big>(</big><em>type=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the total count of entities.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.election_districts">
+<tt class="descname">election_districts</tt><big>(</big><em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.election_districts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.election_districts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal use only. Not maintained.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.id_lookup">
+<tt class="descname">id_lookup</tt><big>(</big><em>namespace</em>, <em>id</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.id_lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.id_lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Influence Explorer entity ID based on a 3rd party ID.</p>
+<p>Valid namespaces include:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">urn:crp:individual</span></tt> &#8211; CRP&#8217;s contributor or lobbyist ID</li>
+<li><tt class="docutils literal"><span class="pre">urn:crp:organization</span></tt> &#8211; CRP&#8217;s organization ID</li>
+<li><tt class="docutils literal"><span class="pre">urn:crp:recipient</span></tt> &#8211; CRP&#8217;s candidate ID</li>
+<li><tt class="docutils literal"><span class="pre">urn:crp:industry</span></tt> &#8211; CRP&#8217;s 3-letter category order</li>
+<li><tt class="docutils literal"><span class="pre">urn:crp:subindustry</span></tt> &#8211; CRP&#8217;s 5-letter category code</li>
+<li><tt class="docutils literal"><span class="pre">urn:nimsp:subindustry</span></tt> &#8211; 5-letter category code added by NIMSP</li>
+<li><tt class="docutils literal"><span class="pre">urn:nimsp:organization</span></tt> &#8211; NIMSP&#8217;s organization ID</li>
+<li><tt class="docutils literal"><span class="pre">urn:nimsp:recipient</span></tt> &#8211; NIMSP&#8217;s candidate ID</li>
+<li><tt class="docutils literal"><span class="pre">urn:sunlight:lobbyist_registration_tracker_url</span></tt> &#8211; URL of Sunlight&#8217;s lobbyist registration tracker page</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.list">
+<tt class="descname">list</tt><big>(</big><em>start</em>, <em>end</em>, <em>type=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all entities.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.metadata">
+<tt class="descname">metadata</tt><big>(</big><em>entity_id</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all available metadata for the given entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.search">
+<tt class="descname">search</tt><big>(</big><em>query</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return entities with names matching the given query.</p>
+<p>Query terms are space separated. Matches must contain all terms
+from the query.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.top_n_individuals">
+<tt class="descname">top_n_individuals</tt><big>(</big><em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.top_n_individuals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.top_n_individuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top individuals, by amount contributed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.top_n_industries">
+<tt class="descname">top_n_industries</tt><big>(</big><em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.top_n_industries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.top_n_industries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top industries, by amount contributed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.top_n_organizations">
+<tt class="descname">top_n_organizations</tt><big>(</big><em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.top_n_organizations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.top_n_organizations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top organizations, by amount contributed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Entities.top_n_politicians">
+<tt class="descname">top_n_politicians</tt><big>(</big><em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Entities.top_n_politicians"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Entities.top_n_politicians" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top politicians, by amount received.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="influenceexplorer.Politician">
+<em class="property">class </em><tt class="descclassname">influenceexplorer.</tt><tt class="descname">Politician</tt><a class="reference internal" href="_modules/influenceexplorer.html#Politician"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods relating to a politician entity.</p>
+<p>Accessed as <tt class="docutils literal"><span class="pre">InfluenceExplorer.pol</span></tt>.</p>
+<dl class="method">
+<dt id="influenceexplorer.Politician.contributor_type_breakdown">
+<tt class="descname">contributor_type_breakdown</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.contributor_type_breakdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.contributor_type_breakdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the breakdown of individual vs. organization contributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.contributors">
+<tt class="descname">contributors</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.contributors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.contributors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top organizational contributors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.earmarks">
+<tt class="descname">earmarks</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.earmarks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.earmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return top earmarks requested by this politician.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.earmarks_local_breakdown">
+<tt class="descname">earmarks_local_breakdown</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.earmarks_local_breakdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.earmarks_local_breakdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return breakdown of earmark amount for in-state vs. out-of-state projects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.industries">
+<tt class="descname">industries</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.industries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.industries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top contributing industries.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.local_breakdown">
+<tt class="descname">local_breakdown</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.local_breakdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.local_breakdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the breakdown of in-state vs. out-of-state contributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.sectors">
+<tt class="descname">sectors</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.sectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.sectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not maintained.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Politician.sparkline">
+<tt class="descname">sparkline</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Politician.sparkline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Politician.sparkline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sparkline data for contributions received.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="influenceexplorer.Organization">
+<em class="property">class </em><tt class="descclassname">influenceexplorer.</tt><tt class="descname">Organization</tt><a class="reference internal" href="_modules/influenceexplorer.html#Organization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods related to organization or industry entities.</p>
+<p>Accessed as <tt class="docutils literal"><span class="pre">InfluenceExplorer.org</span></tt>.</p>
+<dl class="method">
+<dt id="influenceexplorer.Organization.bills">
+<tt class="descname">bills</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.bills"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.bills" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return bills lobbied on.</p>
+<p>Only return data if organization is a client of lobbying firms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.earmarks">
+<tt class="descname">earmarks</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.earmarks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.earmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return top earmarks received by organization.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.fed_spending">
+<tt class="descname">fed_spending</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.fed_spending"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.fed_spending" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return top federal grants and contracts received.</p>
+<p>Matching is based on full-text search and may include incorrect matches
+or miss records. Not appropriate for automatic aggregation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.industry_orgs">
+<tt class="descname">industry_orgs</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.industry_orgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.industry_orgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return top organizations within this industry.</p>
+<p>Only return data if entity is an industry.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.issues">
+<tt class="descname">issues</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return issues lobbied on.</p>
+<p>Only return data if organization is a client of lobbying firms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.level_breakdown">
+<tt class="descname">level_breakdown</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.level_breakdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.level_breakdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return breakdown of amount contributed to state vs. federal races.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.lobbyists">
+<tt class="descname">lobbyists</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.lobbyists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.lobbyists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return lobbyists hired.</p>
+<p>Only return data if organization is a client of lobbying firms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.party_breakdown">
+<tt class="descname">party_breakdown</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.party_breakdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.party_breakdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return breakdown of amount contributed to each party.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.recipients">
+<tt class="descname">recipients</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.recipients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.recipients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return top politicians receiving contributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.registrant_bills">
+<tt class="descname">registrant_bills</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.registrant_bills"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.registrant_bills" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return bill this organization lobbied on.</p>
+<p>Only return data if organization is a lobbying firm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.registrant_clients">
+<tt class="descname">registrant_clients</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.registrant_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.registrant_clients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return clients that hired this organization to lobby.</p>
+<p>Only return data if organization is a lobbying firm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.registrant_issues">
+<tt class="descname">registrant_issues</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.registrant_issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.registrant_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return issues this organization lobbied on.</p>
+<p>Only return data if organization is a lobbying firm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.registrant_lobbyists">
+<tt class="descname">registrant_lobbyists</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.registrant_lobbyists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.registrant_lobbyists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return lobbyists employed.</p>
+<p>Only return data if organization is a lobbying firm.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.registrants">
+<tt class="descname">registrants</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.registrants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.registrants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return lobbying firms hired.</p>
+<p>Only return data if organization is a client of lobbying firms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.sparkline">
+<tt class="descname">sparkline</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.sparkline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.sparkline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sparkline data for contributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Organization.sparkline_by_party">
+<tt class="descname">sparkline_by_party</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Organization.sparkline_by_party"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Organization.sparkline_by_party" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sparkline data for contributions, broken down by recipient party.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="influenceexplorer.Individual">
+<em class="property">class </em><tt class="descclassname">influenceexplorer.</tt><tt class="descname">Individual</tt><a class="reference internal" href="_modules/influenceexplorer.html#Individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods relating to individual entities.</p>
+<p>Accessed as <tt class="docutils literal"><span class="pre">InfluenceExplorer.indiv</span></tt>.</p>
+<dl class="method">
+<dt id="influenceexplorer.Individual.clients">
+<tt class="descname">clients</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.clients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the clients the individual was contracted to work for.</p>
+<p>Only return data for individuals that are registered lobbyists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Individual.issues">
+<tt class="descname">issues</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top issues the individual lobbied on.</p>
+<p>Only return data for individuals that are registered lobbyists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Individual.org_recipients">
+<tt class="descname">org_recipients</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.org_recipients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.org_recipients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top organizations receiving contributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Individual.party_breakdown">
+<tt class="descname">party_breakdown</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.party_breakdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.party_breakdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return breakdown of amount contributed to each party.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Individual.pol_recipients">
+<tt class="descname">pol_recipients</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.pol_recipients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.pol_recipients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the top politicians receiving contributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Individual.registrants">
+<tt class="descname">registrants</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em>, <em>limit=None</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.registrants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.registrants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the lobbying firms that employed the individual.</p>
+<p>Only return data for individuals that are registered lobbyists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="influenceexplorer.Individual.sparkline">
+<tt class="descname">sparkline</tt><big>(</big><em>entity_id</em>, <em>cycle='-1'</em><big>)</big><a class="reference internal" href="_modules/influenceexplorer.html#Individual.sparkline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#influenceexplorer.Individual.sparkline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sparkline data for contributions.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="transparencydata.html"
+                        title="previous chapter">Transparency Data API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/influenceexplorer.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="transparencydata.html" title="Transparency Data API"
+             >previous</a> |</li>
+        <li><a href="index.html">python-transparencydata v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Sunlight Foundation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

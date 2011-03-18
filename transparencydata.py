@@ -1,3 +1,8 @@
+"""
+The transparencydata module provides API wrappers for the data found on
+transparencydata.com.
+"""
+
 __author__ = "Jeremy Carbaugh (jcarbaugh@sunlightfoundation.com)"
 __version__ = "0.1"
 __copyright__ = "Copyright (c) 2010 Sunlight Labs"

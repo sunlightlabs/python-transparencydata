@@ -1,3 +1,9 @@
+"""
+The influenceexplorer module provides API wrappers for the data provided on 
+InfluenceExplorer.com.
+"""
+
+
 import urllib2
 import urllib
 try:
@@ -17,8 +23,26 @@ DEFAULT_CYCLE = "-1" # -1 will return career totals.
 
 
 class InfluenceExplorer(object):
+    
+    """
+    Provides wrappers to the Influence Explorer APIs.
+    
+    Methods are divided into four categories. Entity methods can be accessed
+    through the ``entities`` member, Politician methods through ``pol``, Individual
+    methods through ``indiv`` and Organization through ``org``. For example::
+    
+        api = InfluenceExplorer(<your-key-here>)
+        boehner_id = api.entities.search('john boehner')[1]['id]
+        print api.pol.industries(boehner_id)
+    """
 
     def __init__(self, api_key, base_url=DEFAULT_URL):
+        """
+        Create an API wrapper. 
+        
+        API keys can be obtained from http://services.sunlightlabs.com.
+        """
+        
         self.base_url = base_url if base_url[-1] == '/' else base_url + '/'
         self.api_key = api_key
         self.entities = Entities(self)
@@ -48,6 +72,12 @@ class SubAPI(object):
         
 
 class Entities(SubAPI):
+    """
+    Methods related to searching, listing and ranking entities.
+    
+    Accessed as ``InfluenceExplorer.entities``.
+    """
+    
     def search(self, query):
         """
         Return entities with names matching the given query.
@@ -90,15 +120,16 @@ class Entities(SubAPI):
         Return the Influence Explorer entity ID based on a 3rd party ID.
         
         Valid namespaces include:
-            urn:crp:individual -- CRP's contributor or lobbyist ID
-            urn:crp:organization -- CRP's organization ID
-            urn:crp:recipient -- CRP's candidate ID
-            urn:crp:industry -- CRP's 3-letter category order
-            urn:crp:subindustry -- CRP's 5-letter category code
-            urn:nimsp:subindustry -- 5-letter category code added by NIMSP
-            urn:nimsp:organization -- NIMSP's organization ID
-            urn:nimsp:recipient -- NIMSP's candidate ID
-            urn:sunlight:lobbyist_registration_tracker_url -- URL of Sunlight's lobbyist registration tracker page
+        
+        * ``urn:crp:individual`` -- CRP's contributor or lobbyist ID
+        * ``urn:crp:organization`` -- CRP's organization ID
+        * ``urn:crp:recipient`` -- CRP's candidate ID
+        * ``urn:crp:industry`` -- CRP's 3-letter category order
+        * ``urn:crp:subindustry`` -- CRP's 5-letter category code
+        * ``urn:nimsp:subindustry`` -- 5-letter category code added by NIMSP
+        * ``urn:nimsp:organization`` -- NIMSP's organization ID
+        * ``urn:nimsp:recipient`` -- NIMSP's candidate ID
+        * ``urn:sunlight:lobbyist_registration_tracker_url`` -- URL of Sunlight's lobbyist registration tracker page
         """
         return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id)
 
@@ -146,6 +177,11 @@ class Entities(SubAPI):
 
 
 class Politician(SubAPI):
+    """
+    Methods relating to a politician entity.
+    
+    Accessed as ``InfluenceExplorer.pol``.
+    """
     
     def contributors(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return the top organizational contributors. """
@@ -180,7 +216,12 @@ class Politician(SubAPI):
         return self._get_url_json('aggregates/pol/%s/earmarks/local_breakdown.json' % entity_id, cycle)
 
 
-class Individual(SubAPI):    
+class Individual(SubAPI):
+    """
+    Methods relating to individual entities.
+    
+    Accessed as ``InfluenceExplorer.indiv``.
+    """
     
     def org_recipients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         ''' Return the top organizations receiving contributions. '''
@@ -226,8 +267,11 @@ class Individual(SubAPI):
 
     
 class Organization(SubAPI):
+    """ 
+    Methods related to organization or industry entities.
     
-    """ Methods related to organizations or industries. """
+    Accessed as ``InfluenceExplorer.org``.
+    """
 
     def recipients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top politicians receiving contributions. """
