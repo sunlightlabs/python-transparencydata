@@ -22,7 +22,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-transparencydata v1.0 documentation" href="index.html" /> 
+    <link rel="top" title="python-transparencydata v1.0 documentation" href="index.html" />
+    <link rel="next" title="Influence Explorer API" href="influenceexplorer.html" />
+    <link rel="prev" title="python-transparencydata’s documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,6 +36,12 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="influenceexplorer.html" title="Influence Explorer API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="python-transparencydata’s documentation"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">python-transparencydata v1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -43,10 +51,110 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-transparencydata">
-<span id="transparency-data-api"></span><h1>Transparency Data API<a class="headerlink" href="#module-transparencydata" title="Permalink to this headline">¶</a></h1>
-<p>The transparencydata module provides API wrappers for the data found on
-transparencydata.com.</p>
+  <div class="section" id="transparency-data-api">
+<h1>Transparency Data API<a class="headerlink" href="#transparency-data-api" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The TransparencyData class is constructed with your API key as an initialization parameter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">transparencydata</span> <span class="kn">import</span> <span class="n">TransparencyData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">td</span> <span class="o">=</span> <span class="n">TransparencyData</span><span class="p">(</span><span class="o">&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">key</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you do not have an API key visit <a class="reference external" href="http://services.sunlightlabs.com/api/">http://services.sunlightlabs.com/api/</a> to
+register for one.</p>
+<div class="section" id="parameter-operators">
+<h2>Parameter Operators<a class="headerlink" href="#parameter-operators" title="Permalink to this headline">¶</a></h2>
+<p>Some parameters allow multiple values or greater than, less than, or between operations. We allow operators to be added similar to the method used by the Django ORM. The operator is appended to the end of the parameter name using double underscore.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>                        <span class="c"># contributions equal to 100 dollars</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="p">(</span><span class="n">amount__lt</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>            <span class="c"># contributions less than 100 dollars</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="p">(</span><span class="n">cycle</span><span class="o">=</span><span class="mi">1990</span><span class="p">)</span>                        <span class="c"># contributions from the 1990 election cycle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="p">(</span><span class="n">cycle__in</span><span class="o">=</span><span class="p">(</span><span class="mi">1990</span><span class="p">,</span><span class="mi">2008</span><span class="p">))</span> <span class="c"># contributions from the 1990 and 2008 election cycles</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>gt</dt>
+<dd>Greater than specified value.</dd>
+<dt>lt</dt>
+<dd>Less than specified value.</dd>
+<dt>between</dt>
+<dd><p class="first">Between the lesser value and greater value. Parameters must be passed as a two-value tuple or list.</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="p">(</span><span class="n">date__between</span><span class="o">=</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd>
+<dt>in</dt>
+<dd>Matches any in a range of values. Parameter must be a tuple or list.</dd>
+</dl>
+<p>See the parameter documentation (<a class="reference external" href="http://transparencydata.com/api/">http://transparencydata.com/api/</a>) to find out which operators are valid for each parameter.</p>
+</div>
+<div class="section" id="campaign-contributions">
+<h2>Campaign Contributions<a class="headerlink" href="#campaign-contributions" title="Permalink to this headline">¶</a></h2>
+<p>To find all contributions to Chris Van Hollen from the state of CA during the 2008 election cycle:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="p">(</span><span class="n">cycle</span><span class="o">=</span><span class="mi">2008</span><span class="p">,</span> <span class="n">contributor_state</span><span class="o">=</span><span class="s">&#39;CA&#39;</span><span class="p">,</span> <span class="n">recipient_ft</span><span class="o">=</span><span class="s">&#39;van hollen&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A list of valid contributions parameters can be accessed programmatically:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">td</span><span class="o">.</span><span class="n">contributions</span><span class="o">.</span><span class="n">parameters</span>
+</pre></div>
+</div>
+<p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/contributions">http://transparencydata.com/api/contributions</a></p>
+<p>Response documentation: <a class="reference external" href="http://transparencydata.com/docs/contributions">http://transparencydata.com/docs/contributions</a></p>
+</div>
+<div class="section" id="lobbying">
+<h2>Lobbying<a class="headerlink" href="#lobbying" title="Permalink to this headline">¶</a></h2>
+<p>To find all lobbying conducted by John Wonderlich:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">lobbying</span><span class="p">(</span><span class="n">lobbyist_ft</span><span class="o">=</span><span class="s">&#39;john wonderlich&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A list of valid lobbying parameters can be accessed programmatically:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">td</span><span class="o">.</span><span class="n">lobbying</span><span class="o">.</span><span class="n">parameters</span>
+</pre></div>
+</div>
+<p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/lobbying">http://transparencydata.com/api/lobbying</a></p>
+<p>Response documentation: <a class="reference external" href="http://transparencydata.com/docs/lobbying">http://transparencydata.com/docs/lobbying</a></p>
+</div>
+<div class="section" id="earmarks">
+<h2>Earmarks<a class="headerlink" href="#earmarks" title="Permalink to this headline">¶</a></h2>
+<p>To find all earmarks directed towards Seattle, WA:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">earmarks</span><span class="p">(</span><span class="n">city</span><span class="o">=</span><span class="s">&#39;Seattle&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s">&#39;WA&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A list of valid earmark parameters can be accessed programmatically:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">td</span><span class="o">.</span><span class="n">earmarks</span><span class="o">.</span><span class="n">parameters</span>
+</pre></div>
+</div>
+<p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/earmarks">http://transparencydata.com/api/earmarks</a></p>
+<p>Response documentation: <a class="reference external" href="http://transparencydata.com/docs/earmarks">http://transparencydata.com/docs/earmarks</a></p>
+</div>
+<div class="section" id="federal-grants">
+<h2>Federal Grants<a class="headerlink" href="#federal-grants" title="Permalink to this headline">¶</a></h2>
+<p>To find all grants made by the NEA in 2010:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">grants</span><span class="p">(</span><span class="n">agency_ft</span><span class="o">=</span><span class="s">&#39;national endowment for the arts&#39;</span><span class="p">,</span> <span class="n">fiscal_year</span><span class="o">=</span><span class="s">&#39;2010&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A list of valid grant parameters can be accessed programmatically:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">grants</span><span class="o">.</span><span class="n">parameters</span>
+</pre></div>
+</div>
+<p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/grants/">http://transparencydata.com/api/grants/</a></p>
+<p>Response documentation: <a class="reference external" href="http://transparencydata.com/docs/grants/">http://transparencydata.com/docs/grants/</a></p>
+</div>
+<div class="section" id="federal-contracts">
+<h2>Federal Contracts<a class="headerlink" href="#federal-contracts" title="Permalink to this headline">¶</a></h2>
+<p>To find all federal contracts issued to Bank of America:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">contracts</span><span class="p">(</span><span class="n">vendor_name</span><span class="o">=</span><span class="s">&#39;bank of america&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A list of valid contract parameters can be accessed programmatically:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">contracts</span><span class="o">.</span><span class="n">parameters</span>
+</pre></div>
+</div>
+<p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/contracts">http://transparencydata.com/api/contracts</a></p>
+<p>Response documentation: <a class="reference external" href="http://transparencydata.com/docs/contracts">http://transparencydata.com/docs/contracts</a></p>
+</div>
 </div>
 
 
@@ -55,6 +163,26 @@ transparencydata.com.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Transparency Data API</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#parameter-operators">Parameter Operators</a></li>
+<li><a class="reference internal" href="#campaign-contributions">Campaign Contributions</a></li>
+<li><a class="reference internal" href="#lobbying">Lobbying</a></li>
+<li><a class="reference internal" href="#earmarks">Earmarks</a></li>
+<li><a class="reference internal" href="#federal-grants">Federal Grants</a></li>
+<li><a class="reference internal" href="#federal-contracts">Federal Contracts</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">python-transparencydata&#8217;s documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="influenceexplorer.html"
+                        title="next chapter">Influence Explorer API</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/transparencydata.txt"
@@ -86,6 +214,12 @@ transparencydata.com.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="influenceexplorer.html" title="Influence Explorer API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="python-transparencydata’s documentation"
+             >previous</a> |</li>
         <li><a href="index.html">python-transparencydata v1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
