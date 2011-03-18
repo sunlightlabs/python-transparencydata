@@ -53,9 +53,8 @@
             
   <div class="section" id="transparency-data-api">
 <h1>Transparency Data API<a class="headerlink" href="#transparency-data-api" title="Permalink to this headline">¶</a></h1>
-</div>
 <div class="section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The TransparencyData class is constructed with your API key as an initialization parameter:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">transparencydata</span> <span class="kn">import</span> <span class="n">TransparencyData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">td</span> <span class="o">=</span> <span class="n">TransparencyData</span><span class="p">(</span><span class="o">&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">key</span><span class="o">&gt;</span><span class="p">)</span>
@@ -63,6 +62,7 @@
 </div>
 <p>If you do not have an API key visit <a class="reference external" href="http://services.sunlightlabs.com/api/">http://services.sunlightlabs.com/api/</a> to
 register for one.</p>
+</div>
 <div class="section" id="parameter-operators">
 <h2>Parameter Operators<a class="headerlink" href="#parameter-operators" title="Permalink to this headline">¶</a></h2>
 <p>Some parameters allow multiple values or greater than, less than, or between operations. We allow operators to be added similar to the method used by the Django ORM. The operator is appended to the end of the parameter name using double underscore.</p>
@@ -132,11 +132,11 @@ register for one.</p>
 <div class="section" id="federal-grants">
 <h2>Federal Grants<a class="headerlink" href="#federal-grants" title="Permalink to this headline">¶</a></h2>
 <p>To find all grants made by the NEA in 2010:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">grants</span><span class="p">(</span><span class="n">agency_ft</span><span class="o">=</span><span class="s">&#39;national endowment for the arts&#39;</span><span class="p">,</span> <span class="n">fiscal_year</span><span class="o">=</span><span class="s">&#39;2010&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">grants</span><span class="p">(</span><span class="n">agency_ft</span><span class="o">=</span><span class="s">&#39;national endowment for the arts&#39;</span><span class="p">,</span> <span class="n">fiscal_year</span><span class="o">=</span><span class="s">&#39;2010&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A list of valid grant parameters can be accessed programmatically:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">grants</span><span class="o">.</span><span class="n">parameters</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">grants</span><span class="o">.</span><span class="n">parameters</span>
 </pre></div>
 </div>
 <p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/grants/">http://transparencydata.com/api/grants/</a></p>
@@ -145,11 +145,11 @@ register for one.</p>
 <div class="section" id="federal-contracts">
 <h2>Federal Contracts<a class="headerlink" href="#federal-contracts" title="Permalink to this headline">¶</a></h2>
 <p>To find all federal contracts issued to Bank of America:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">contracts</span><span class="p">(</span><span class="n">vendor_name</span><span class="o">=</span><span class="s">&#39;bank of america&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contracts</span><span class="p">(</span><span class="n">vendor_name</span><span class="o">=</span><span class="s">&#39;bank of america&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A list of valid contract parameters can be accessed programmatically:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">contracts</span><span class="o">.</span><span class="n">parameters</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">contracts</span><span class="o">.</span><span class="n">parameters</span>
 </pre></div>
 </div>
 <p>Parameter documentation: <a class="reference external" href="http://transparencydata.com/api/contracts">http://transparencydata.com/api/contracts</a></p>
@@ -165,8 +165,8 @@ register for one.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Transparency Data API</a></li>
-<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#">Transparency Data API</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#parameter-operators">Parameter Operators</a></li>
 <li><a class="reference internal" href="#campaign-contributions">Campaign Contributions</a></li>
 <li><a class="reference internal" href="#lobbying">Lobbying</a></li>

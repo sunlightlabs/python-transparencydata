@@ -1,9 +1,9 @@
 Transparency Data API
 =====================
 
+-----
 Usage
-=====
-
+-----
 
 The TransparencyData class is constructed with your API key as an initialization parameter:
 
@@ -98,11 +98,11 @@ Federal Grants
 
 To find all grants made by the NEA in 2010:
 
-    >>> api.grants(agency_ft='national endowment for the arts', fiscal_year='2010')
+    >>> td.grants(agency_ft='national endowment for the arts', fiscal_year='2010')
     
 A list of valid grant parameters can be accessed programmatically:
 
-    >>> api.grants.parameters
+    >>> td.grants.parameters
     
 Parameter documentation: http://transparencydata.com/api/grants/
 
@@ -115,11 +115,11 @@ Federal Contracts
 
 To find all federal contracts issued to Bank of America:
 
-    >>> api.contracts(vendor_name='bank of america')
+    >>> td.contracts(vendor_name='bank of america')
     
 A list of valid contract parameters can be accessed programmatically:
 
-    >>> api.contracts.parameters
+    >>> td.contracts.parameters
 
 Parameter documentation: http://transparencydata.com/api/contracts
 

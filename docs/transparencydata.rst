@@ -1,9 +1,9 @@
 Transparency Data API
 =====================
 
+-----
 Usage
-=====
-
+-----
 
 The TransparencyData class is constructed with your API key as an initialization parameter:
 
