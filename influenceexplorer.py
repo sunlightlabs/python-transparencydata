@@ -92,6 +92,7 @@ class Entities(SubAPI):
     _lobbying_markers = ['lobbying_count']
     _spending_markers = ['grant_count', 'loan_count', 'contract_count']
     _earmark_markers = ['earmark_count']
+    _contractor_misconduct_markers = ['contractor_misconduct_count']
 
     def metadata(self, entity_id):
         
@@ -104,6 +105,7 @@ class Entities(SubAPI):
         results['lobbying_years'] = self._entity_years(results['totals'], self._lobbying_markers)
         results['spending_years'] = self._entity_years(results['totals'], self._spending_markers)
         results['earmark_years'] = self._entity_years(results['totals'], self._earmark_markers)
+        results['contractor_misconduct_years'] = self._entity_years(results['totals'], self._contractor_misconduct_markers)
 
         return results
 
@@ -378,4 +380,8 @@ class Organization(SubAPI):
     def earmarks(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top earmarks received by organization. """
         return self._get_url_json('aggregates/org/%s/earmarks.json' % entity_id, cycle, limit)
+
+    def contractor_misconduct(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top misconduct instances by organization. """
+        return self._get_url_json('aggregates/org/%s/contractor_misconduct.json' % entity_id, cycle, limit)
 
