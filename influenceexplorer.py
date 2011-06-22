@@ -385,3 +385,7 @@ class Organization(SubAPI):
         """ Return top misconduct instances by organization. """
         return self._get_url_json('aggregates/org/%s/contractor_misconduct.json' % entity_id, cycle, limit)
 
+    def regulations(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the regulatory dockets that most frequently mention this entity. """
+        return self._get_url_json('aggregates/org/%s/regulations.json' % entity_id, cycle, limit)
+
