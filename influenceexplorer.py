@@ -93,6 +93,7 @@ class Entities(SubAPI):
     _spending_markers = ['grant_count', 'loan_count', 'contract_count']
     _earmark_markers = ['earmark_count']
     _contractor_misconduct_markers = ['contractor_misconduct_count']
+    _epa_echo_markers = ['epa_actions_count']
 
     def metadata(self, entity_id):
         
@@ -106,6 +107,7 @@ class Entities(SubAPI):
         results['spending_years'] = self._entity_years(results['totals'], self._spending_markers)
         results['earmark_years'] = self._entity_years(results['totals'], self._earmark_markers)
         results['contractor_misconduct_years'] = self._entity_years(results['totals'], self._contractor_misconduct_markers)
+        results['epa_echo_years'] = self._entity_years(results['totals'], self._epa_echo_markers)
 
         return results
 
@@ -392,3 +394,7 @@ class Organization(SubAPI):
     def regulations_submitter(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return the regulatory dockets with the most submissions from this entity. """
         return self._get_url_json('aggregates/org/%s/regulations_submitter.json' % entity_id, cycle, limit)
+
+    def epa_echo(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top EPA enforcement actions by organization. """
+        return self._get_url_json('aggregates/org/%s/epa_enforcement_actions.json' % entity_id, cycle, limit)
