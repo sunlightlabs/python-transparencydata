@@ -199,6 +199,10 @@ class Politician(SubAPI):
         """ Return the top contributing industries. """
         return self._get_url_json('aggregates/pol/%s/contributors/industries.json' % entity_id, cycle, limit)
 
+    def industries_unknown(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return the count and total from unknown industries """
+        return self._get_url_json('aggregates/pol/%s/contributors/industries_unknown.json' % entity_id, cycle)
+
     def local_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
         """ Return the breakdown of in-state vs. out-of-state contributions. """
         return self._get_url_json('aggregates/pol/%s/contributors/local_breakdown.json' % entity_id, cycle)
