@@ -179,6 +179,11 @@ class Entities(SubAPI):
         """ Internal use only. Not maintained. """
         return self._get_url_json('entities/race/districts.json', cycle)
 
+    def bundles(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return any bundling data for the entity. """
+        return self._get_url_json('aggregates/pol/{0}/bundles.json'.format(entity_id), cycle)
+
+
 
 class Politician(SubAPI):
     """
