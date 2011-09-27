@@ -407,3 +407,7 @@ class Organization(SubAPI):
     def epa_echo(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top EPA enforcement actions by organization. """
         return self._get_url_json('aggregates/org/%s/epa_enforcement_actions.json' % entity_id, cycle, limit)
+
+    def faca(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return this entity's employees' memberships on federal advisory committees. """
+        return self._get_url_json('aggregates/org/%s/faca.json' % entity_id, cycle, limit)
