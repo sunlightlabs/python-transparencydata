@@ -94,6 +94,8 @@ class Entities(SubAPI):
     _earmark_markers = ['earmark_count']
     _contractor_misconduct_markers = ['contractor_misconduct_count']
     _epa_echo_markers = ['epa_actions_count']
+    _regulations_markers = ['regs_docket_count', 'regs_submitted_docket_count']
+    _faca_markers = ['faca_committee_count', 'faca_member_count']
 
     def metadata(self, entity_id):
         
@@ -108,6 +110,8 @@ class Entities(SubAPI):
         results['earmark_years'] = self._entity_years(results['totals'], self._earmark_markers)
         results['contractor_misconduct_years'] = self._entity_years(results['totals'], self._contractor_misconduct_markers)
         results['epa_echo_years'] = self._entity_years(results['totals'], self._epa_echo_markers)
+        results['regulations_years'] = self._entity_years(results['totals'], self._regulations_markers)
+        results['faca_years'] = self._entity_years(results['totals'], self._faca_markers)
 
         return results
 
