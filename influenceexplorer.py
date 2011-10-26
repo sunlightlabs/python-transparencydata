@@ -294,6 +294,11 @@ class Organization(SubAPI):
         """ Return top politicians receiving contributions. """
         return self._get_url_json('aggregates/org/%s/recipients.json' % entity_id, cycle, limit)
 
+
+    def pac_recipients(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        ''' Return the top organizations receiving contributions. '''
+        return self._get_url_json('aggregates/org/%s/recipient_pacs.json' % entity_id, cycle, limit)
+
     def party_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
         """ Return breakdown of amount contributed to each party. """
         return self._get_url_json('aggregates/org/%s/recipients/party_breakdown.json' % entity_id, cycle)
