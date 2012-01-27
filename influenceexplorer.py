@@ -232,9 +232,13 @@ class Politician(SubAPI):
         """ Return breakdown of earmark amount for in-state vs. out-of-state projects. """
         return self._get_url_json('aggregates/pol/%s/earmarks/local_breakdown.json' % entity_id, cycle)
         
-    def fec_summary(self, entity_id):
+    def fec_summary(self, entity_id, cycle=DEFAULT_CYCLE):
         """ Return the latest figures from the FECs summary report. """
-        return self._get_url_json('aggregates/pol/%s/fec_summary.json' % entity_id)
+        return self._get_url_json('aggregates/pol/%s/fec_summary.json' % entity_id, cycle)
+
+    def fec_timeline(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return weekly itemized fundraising totals for the candidate and opponents. """
+        return self._get_url_json('aggregates/pol/%s/fec_timeline.json' % entity_id, cycle)
 
 
 class Individual(SubAPI):
