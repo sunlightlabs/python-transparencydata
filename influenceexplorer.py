@@ -240,6 +240,10 @@ class Politician(SubAPI):
         """ Return weekly itemized fundraising totals for the candidate and opponents. """
         return self._get_url_json('aggregates/pol/%s/fec_timeline.json' % entity_id, cycle)
 
+    def fec_indexp(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return independent expenditures for and against the candidate. """
+        return self._get_url_json('aggregates/pol/%s/fec_indexp.json' % entity_id)
+
 
 class Individual(SubAPI):
     """
@@ -428,3 +432,8 @@ class Organization(SubAPI):
     def faca(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return this entity's employees' memberships on federal advisory committees. """
         return self._get_url_json('aggregates/org/%s/faca.json' % entity_id, cycle, limit)
+        
+    def fec_indexp(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return independent expenditures made by the committee. """
+        return self._get_url_json('aggregates/org/%s/fec_indexp.json' % entity_id)
+
