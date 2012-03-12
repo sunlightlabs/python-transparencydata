@@ -437,3 +437,7 @@ class Organization(SubAPI):
         """ Return independent expenditures made by the committee. """
         return self._get_url_json('aggregates/org/%s/fec_indexp.json' % entity_id)
 
+    def fec_top_contribs(self, entity_id, limit=DEFAULT_LIMIT):
+        """ Return independent expenditures made by the committee. """
+        return self._get_url_json('aggregates/org/%s/fec_top_contribs.json' % entity_id)
+
