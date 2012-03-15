@@ -88,7 +88,7 @@ class Entities(SubAPI):
         
         return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
 
-    _camp_fin_markers = ['contributor_count', 'recipient_count']
+    _camp_fin_markers = ['contributor_count', 'recipient_count', 'independent_expenditure_amount']
     _lobbying_markers = ['lobbying_count']
     _spending_markers = ['grant_count', 'loan_count', 'contract_count']
     _earmark_markers = ['earmark_count']
