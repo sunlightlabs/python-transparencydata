@@ -432,6 +432,10 @@ class Organization(SubAPI):
     def faca(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return this entity's employees' memberships on federal advisory committees. """
         return self._get_url_json('aggregates/org/%s/faca.json' % entity_id, cycle, limit)
+
+    def fec_summary(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return the latest figures from the FECs summary report. """
+        return self._get_url_json('aggregates/org/%s/fec_summary.json' % entity_id, cycle)
         
     def fec_indexp(self, entity_id, cycle=DEFAULT_CYCLE):
         """ Return independent expenditures made by the committee. """
