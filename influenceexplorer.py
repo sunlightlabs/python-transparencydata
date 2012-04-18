@@ -319,6 +319,10 @@ class Organization(SubAPI):
         """ Return breakdown of amount contributed to state vs. federal races. """
         return self._get_url_json('aggregates/org/%s/recipients/level_breakdown.json' % entity_id, cycle)
 
+    def office_type_breakdown(self, entity_id, cycle=DEFAULT_CYCLE):
+        """ Return breakdown of amount contributed to races by office type. """
+        return self._get_url_json('aggregates/org/%s/recipients/office_type_breakdown.json' % entity_id, cycle)
+
     def registrants(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         '''
         Return lobbying firms hired.
