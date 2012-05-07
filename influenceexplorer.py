@@ -187,6 +187,10 @@ class Entities(SubAPI):
         """ Return any bundling data for the entity. """
         return self._get_url_json('aggregates/pol/{0}/bundles.json'.format(entity_id), cycle)
 
+    def top_n_lobbyist_bundlers(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top lobbyist bundlers. """
+        return self._get_url_json('aggregates/indivs/lobbyist_bundlers/top_{0}.json'.format(limit), cycle)
+
 
 
 class Politician(SubAPI):
