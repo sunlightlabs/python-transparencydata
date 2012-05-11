@@ -88,7 +88,7 @@ class Entities(SubAPI):
         
         return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
 
-    _camp_fin_markers = ['contributor_count', 'recipient_count', 'independent_expenditure_amount']
+    _camp_fin_markers = ['contributor_count', 'recipient_count', 'independent_expenditure_amount', 'fec_summary_count']
     _lobbying_markers = ['lobbying_count']
     _spending_markers = ['grant_count', 'loan_count', 'contract_count']
     _earmark_markers = ['earmark_count']
@@ -224,10 +224,6 @@ class Politician(SubAPI):
         """ Return the breakdown of individual vs. organization contributions. """
         return self._get_url_json('aggregates/pol/%s/contributors/type_breakdown.json' % entity_id, cycle)
 
-    def sparkline(self, entity_id, cycle=DEFAULT_CYCLE):
-        """ Return sparkline data for contributions received. """
-        return self._get_url_json('aggregates/pol/%s/sparkline.json' % entity_id, cycle)
-
     def earmarks(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top earmarks requested by this politician. """
         return self._get_url_json('aggregates/pol/%s/earmarks.json' % entity_id, cycle, limit)
@@ -294,11 +290,7 @@ class Individual(SubAPI):
         """
         return self._get_url_json('aggregates/indiv/%s/clients.json' % entity_id, cycle, limit)
 
-    def sparkline(self, entity_id, cycle=DEFAULT_CYCLE):
-        """ Return sparkline data for contributions. """
-        return self._get_url_json('aggregates/indiv/%s/sparkline.json' % entity_id, cycle)
 
-    
 class Organization(SubAPI):
     """ 
     Methods related to organization or industry entities.
@@ -395,14 +387,6 @@ class Organization(SubAPI):
         Only return data if entity is an industry.
         """
         return self._get_url_json('aggregates/industry/%s/orgs.json' % entity_id, cycle, limit)
-
-    def sparkline(self, entity_id, cycle=DEFAULT_CYCLE):
-        """ Return sparkline data for contributions. """
-        return self._get_url_json('aggregates/org/%s/sparkline.json' % entity_id, cycle)
-
-    def sparkline_by_party(self, entity_id, cycle=DEFAULT_CYCLE):
-        """ Return sparkline data for contributions, broken down by recipient party. """
-        return  self._get_url_json('aggregates/org/%s/sparkline_by_party.json' % entity_id, cycle)
 
     def fed_spending(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """
