@@ -211,6 +211,10 @@ class Entities(SubAPI):
         """ Return top industries by dollars donated to republicans. """
         return self._get_url_json('aggregates/industries/party/R/top_{0}.json'.format(limit), cycle)
 
+    def top_n_largest_donations_in_last_month(self, limit=DEFAULT_LIMIT):
+        """ Return largest donations in last month. """
+        return self._get_url_json('aggregates/pols/donations/largest_{0}.json'.format(limit))
+
     def top_n_pacs_by_indexp(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top PACs by independent expenditures. """
         return self._get_url_json('aggregates/orgs/indexp/top_{0}.json'.format(limit))
