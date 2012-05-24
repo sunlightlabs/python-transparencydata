@@ -163,11 +163,11 @@ class Entities(SubAPI):
         """ Return the top individuals, by amount contributed. """
         return self._get_url_json('aggregates/indivs/top_%s.json' % limit, cycle)
 
-    def top_n_individual_donors_to_democrats(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+    def top_n_indiv_democratic_donors(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return the top individuals, by amount contributed to Democrats. """
         return self._get_url_json('aggregates/indivs/party/D/top_%s.json' % limit, cycle)
 
-    def top_n_individual_donors_to_republicans(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+    def top_n_indiv_republican_donors(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return the top individuals, by amount contributed to Republicans. """
         return self._get_url_json('aggregates/indivs/party/R/top_%s.json' % limit, cycle)
 
