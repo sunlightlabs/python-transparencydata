@@ -175,8 +175,11 @@ class Entities(SubAPI):
         """ Return the top organizations, by amount contributed. """
         return self._get_url_json('aggregates/orgs/top_%s.json' % limit, cycle)
 
-    def top_n_politicians(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+    def top_n_politicians(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT, office=None):
         """ Return the top politicians, by amount received. """
+        if office in ('president', 'senate', 'house', 'governor'):
+            return self._get_url_json('aggregates/pols/%s/top_%s.json' % (office, limit), cycle)
+
         return self._get_url_json('aggregates/pols/top_%s.json' % limit, cycle)
 
     def top_n_industries(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
