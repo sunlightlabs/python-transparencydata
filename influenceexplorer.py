@@ -202,9 +202,12 @@ class Entities(SubAPI):
         """ Return top lobbyist bundlers. """
         return self._get_url_json('aggregates/indivs/lobbyist_bundlers/top_{0}.json'.format(limit), cycle)
 
-    def top_n_industries_lobbying(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+    def top_n_orgs_lobbying(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT, is_industry=False):
         """ Return top industries by lobbying spending. """
-        return self._get_url_json('aggregates/industries/lobbying_clients/top_{0}.json'.format(limit), cycle)
+        if is_industry:
+            return self._get_url_json('aggregates/industries/lobbying/top_{0}.json'.format(limit), cycle)
+        else:
+            return self._get_url_json('aggregates/orgs/lobbying/top_{0}.json'.format(limit), cycle)
 
     def top_n_industry_donors_to_democrats(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top industries by dollars donated to democrats. """
