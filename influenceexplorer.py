@@ -229,6 +229,11 @@ class Entities(SubAPI):
         """ Return top lobbying firms by income. """
         return self._get_url_json('aggregates/orgs/lobbying_firms/top_{0}.json'.format(limit))
 
+    def top_n_indivs_by_area(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT, area=None):
+        """ Return top individuals donating at the state level. """
+        if area.lower() in ('state', 'federal'):
+            return self._get_url_json('aggregates/indivs/{}/top_{}.json'.format(area, limit))
+
     def top_n_regs_submitters(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top organizations submitting comments on regulations. """
         return self._get_url_json('aggregates/orgs/regulations/submitters/top_{}.json'.format(limit))
