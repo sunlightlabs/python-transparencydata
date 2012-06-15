@@ -225,6 +225,11 @@ class Entities(SubAPI):
         """ Return top PACs by independent expenditures. """
         return self._get_url_json('aggregates/orgs/indexp/top_{0}.json'.format(limit))
 
+    def top_n_pols_by_indexp_by_office(self, office, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        """ Return top politicians by independent expenditures, by office. """
+        if office in 'senate house president'.split():
+            return self._get_url_json('aggregates/pols/indexp/{}/top_{}.json'.format(office, limit))
+
     def top_n_firms_by_income(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top lobbying firms by income. """
         return self._get_url_json('aggregates/orgs/lobbying_firms/top_{0}.json'.format(limit))
