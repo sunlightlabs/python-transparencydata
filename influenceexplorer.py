@@ -219,7 +219,7 @@ class Entities(SubAPI):
 
     def top_n_largest_donations_in_last_month(self, limit=DEFAULT_LIMIT):
         """ Return largest donations in last month. """
-        return self._get_url_json('aggregates/pols/donations/largest_{0}.json'.format(limit))
+        return self._get_url_json('aggregates/fec/last_month/largest_{0}.json'.format(limit))
 
     def top_n_pacs_by_indexp(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top PACs by independent expenditures. """
