@@ -193,7 +193,7 @@ class ContractsClient(Client):
         'current_amount',
         'maximum_amount',    
     )
-    
+
 
 # main wrapper
 class TransparencyData(object):
