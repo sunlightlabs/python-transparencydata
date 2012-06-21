@@ -243,6 +243,11 @@ class Entities(SubAPI):
         """ Return top organizations submitting comments on regulations. """
         return self._get_url_json('aggregates/orgs/regulations/submitters/top_{}.json'.format(limit))
 
+    def top_n_org_donors_by_area_contributor_type(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT, area=None, contributor_type=None):
+        """ Return top organizations contributing via PACs or employees by area (state/federal). """
+        if area in 'state federal'.split() and contributor_type in 'pac employee'.split():
+            return self._get_url_json('aggregates/orgs/{}/{}/top_{}.json'.format(area, contributor_type, limit))
+
 
 
 class Politician(SubAPI):
