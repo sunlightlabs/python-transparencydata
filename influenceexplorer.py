@@ -49,6 +49,7 @@ class InfluenceExplorer(object):
         self.pol = Politician(self)
         self.indiv = Individual(self)
         self.org = Organization(self)
+        self.map_ = Map(self)
 
 
     def _get_url_json(self, path, cycle=None, limit=None, **params):
@@ -489,4 +490,14 @@ class Organization(SubAPI):
     def fec_top_contribs(self, entity_id, limit=DEFAULT_LIMIT):
         """ Return top contributors to the committee. """
         return self._get_url_json('aggregates/org/%s/fec_top_contribs.json' % entity_id)
+
+
+class Map(SubAPI):
+    """ 
+    Methods that return geographical data.
+    
+    Accessed as ``InfluenceExplorer.org``.
+    """
+    def senate_independent_expenditures(self, cycle=DEFAULT_CYCLE):
+        return self._get_url_json('aggregates/map/indexp/senate/lat_lng.json', cycle)
 
