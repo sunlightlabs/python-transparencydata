@@ -499,5 +499,5 @@ class Map(SubAPI):
     Accessed as ``InfluenceExplorer.org``.
     """
     def senate_independent_expenditures(self, cycle=DEFAULT_CYCLE):
-        return self._get_url_json('aggregates/map/indexp/senate/lat_lng.json', cycle)
+        return self._get_url_json('aggregates/map/indexp/senate/lat_lng.geo.json', cycle)
 
