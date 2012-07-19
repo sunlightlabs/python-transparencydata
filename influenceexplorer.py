@@ -504,3 +504,6 @@ class Map(SubAPI):
     def house_independent_expenditures(self, cycle=DEFAULT_CYCLE):
         return self._get_url_json('aggregates/map/indexp/house/lat_lng.geo.json', cycle)
 
+    def presidential_contribs(self, state, cycle=DEFAULT_CYCLE):
+        return self._get_url_json('aggregates/map/contributions/presidential/{}/lat_lng.geo.json'.format(state), cycle)
+
