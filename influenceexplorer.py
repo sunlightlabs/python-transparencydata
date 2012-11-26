@@ -127,9 +127,9 @@ class Entities(SubAPI):
     def id_lookup(self, namespace, id):
         """
         Return the Influence Explorer entity ID based on a 3rd party ID.
-        
+
         Valid namespaces include:
-        
+
         * ``urn:crp:individual`` -- CRP's contributor or lobbyist ID
         * ``urn:crp:organization`` -- CRP's organization ID
         * ``urn:crp:recipient`` -- CRP's candidate ID
@@ -139,8 +139,16 @@ class Entities(SubAPI):
         * ``urn:nimsp:organization`` -- NIMSP's organization ID
         * ``urn:nimsp:recipient`` -- NIMSP's candidate ID
         * ``urn:sunlight:lobbyist_registration_tracker_url`` -- URL of Sunlight's lobbyist registration tracker page
+        * ``urn:sunlight:congressional_bioguide`` -- URL of Sunlight's lobbyist registration tracker page
         """
-        return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id)
+
+        bioguide_id = None
+        if namespace == 'urn:sunlight:congressional_bioguide':
+            bioguide_id = id
+            namespace = None
+            id = None
+
+        return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id, bioguide_id=bioguide_id)
 
 
     def count(self, type=None):
