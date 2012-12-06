@@ -59,10 +59,12 @@ class InfluenceExplorer(object):
             params.update({'cycle': cycle})
         if limit:
             params.update({'limit': limit})
-        
+
         params.update({'apikey': self.api_key})
 
-        fp = urllib2.urlopen(self.base_url + path + '?' + urllib.urlencode(params))
+        full_url = self.base_url + path + '?' + urllib.urlencode(params)
+
+        fp = urllib2.urlopen(full_url)
 
         return json.loads(fp.read())
 
@@ -70,24 +72,31 @@ class InfluenceExplorer(object):
 class SubAPI(object):
     def __init__(self, main_api):
         self._get_url_json = main_api._get_url_json
-        
+
 
 class Entities(SubAPI):
     """
     Methods related to searching, listing and ranking entities.
-    
+
     Accessed as ``InfluenceExplorer.entities``.
     """
-    
-    def search(self, query):
+
+    def search(self, query, entity_type=None):
         """
         Return entities with names matching the given query.
-        
+
         Query terms are space separated. Matches must contain all terms
         from the query.
+
+        Will by default return all types of entities available. Limit to one
+        type (politician, individual, organization, industry) with the
+        ``entity_type`` parameter.
         """
-        
-        return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
+
+        if entity_type:
+            return self._get_url_json('entities.json', **{'search': query.encode('ascii', 'ignore'), 'type': entity_type})
+        else:
+            return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
 
     _camp_fin_markers = ['contributor_count', 'recipient_count', 'independent_expenditure_amount', 'fec_summary_count']
     _lobbying_markers = ['lobbying_count']
