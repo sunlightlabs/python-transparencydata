@@ -156,8 +156,9 @@ class Entities(SubAPI):
             bioguide_id = id
             namespace = None
             id = None
-
-        return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id, bioguide_id=bioguide_id)
+            return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id, bioguide_id=bioguide_id)
+        else:
+            return self._get_url_json('entities/id_lookup.json', namespace=namespace, id=id)
 
 
     def count(self, type=None):
