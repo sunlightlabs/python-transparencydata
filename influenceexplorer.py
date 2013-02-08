@@ -148,7 +148,7 @@ class Entities(SubAPI):
         * ``urn:nimsp:organization`` -- NIMSP's organization ID
         * ``urn:nimsp:recipient`` -- NIMSP's candidate ID
         * ``urn:sunlight:lobbyist_registration_tracker_url`` -- URL of Sunlight's lobbyist registration tracker page
-        * ``urn:sunlight:congressional_bioguide`` -- URL of Sunlight's lobbyist registration tracker page
+        * ``urn:sunlight:congressional_bioguide`` -- ID as assigned by the Congressional Bioguide (bioguide.congress.gov)
         """
 
         bioguide_id = None
