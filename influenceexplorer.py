@@ -420,6 +420,12 @@ class Organization(SubAPI):
         """
         return self._get_url_json('aggregates/industry/%s/orgs.json' % entity_id, cycle, limit)
 
+    def subindustry_totals(self,cycle=DEFAULT_CYCLE):
+        """
+        Return totals for all subindustries in a given cycle
+        """
+        return self._get_url_json('aggregates/industries/subindustry_totals.json', cycle=cycle)
+
     def fed_spending(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """
         Return top federal grants and contracts received.
