@@ -223,7 +223,8 @@ class Entities(SubAPI):
         """ Return top lobbying firms by income. """
         return self._get_url_json('aggregates/orgs/lobbying_firms/top_{0}.json'.format(limit))
 
-
+    def top_n_industries_time_series(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        return self._get_url_json('aggregates/industries/top_{0}_industries_time_series.json'.format((limit)), cycle)
 
 class Politician(SubAPI):
     """
