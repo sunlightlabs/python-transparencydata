@@ -505,9 +505,9 @@ class Organization(SubAPI):
         """ Return independent expenditures made by the committee. """
         return self._get_url_json('aggregates/org/%s/fec_indexp.json' % entity_id)
 
-    def fec_top_contribs(self, entity_id, limit=DEFAULT_LIMIT):
+    def fec_top_contribs(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top contributors to the committee. """
-        return self._get_url_json('aggregates/org/%s/fec_top_contribs.json' % entity_id)
+        return self._get_url_json('aggregates/org/%s/fec_top_contribs.json' % entity_id, cycle, limit)
 
 
 class Map(SubAPI):
