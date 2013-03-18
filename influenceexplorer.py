@@ -242,12 +242,12 @@ class Entities(SubAPI):
 
     def top_n_pacs_by_indexp(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top PACs by independent expenditures. """
-        return self._get_url_json('aggregates/orgs/indexp/top_{0}.json'.format(limit))
+        return self._get_url_json('aggregates/orgs/indexp/top_{0}.json'.format(limit), cycle)
 
     def top_n_pols_by_indexp_by_office(self, office, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top politicians by independent expenditures, by office. """
         if office in 'senate house president'.split():
-            return self._get_url_json('aggregates/pols/indexp/{}/top_{}.json'.format(office, limit))
+            return self._get_url_json('aggregates/pols/indexp/{}/top_{}.json'.format(office, limit), cycle)
 
     def top_n_firms_by_income(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top lobbying firms by income. """
@@ -318,7 +318,7 @@ class Politician(SubAPI):
 
     def fec_indexp(self, entity_id, cycle=DEFAULT_CYCLE):
         """ Return independent expenditures for and against the candidate. """
-        return self._get_url_json('aggregates/pol/%s/fec_indexp.json' % entity_id)
+        return self._get_url_json('aggregates/pol/%s/fec_indexp.json' % entity_id, cycle)
 
 
 class Individual(SubAPI):
@@ -503,7 +503,7 @@ class Organization(SubAPI):
         
     def fec_indexp(self, entity_id, cycle=DEFAULT_CYCLE):
         """ Return independent expenditures made by the committee. """
-        return self._get_url_json('aggregates/org/%s/fec_indexp.json' % entity_id)
+        return self._get_url_json('aggregates/org/%s/fec_indexp.json' % entity_id, cycle)
 
     def fec_top_contribs(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """ Return top contributors to the committee. """
