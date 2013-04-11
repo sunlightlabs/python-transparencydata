@@ -19,7 +19,8 @@ from transparencydata import DEFAULT_URL
 # will use its own default.
 DEFAULT_LIMIT = None
 
-DEFAULT_CYCLE = "-1" # -1 will return career totals.
+ALL_CYCLES = "-1"
+DEFAULT_CYCLE = ALL_CYCLES # -1 will return career totals.
 
 
 class InfluenceExplorer(object):
