@@ -66,6 +66,9 @@ class InfluenceExplorer(object):
 
         r = requests.get(full_url, params=params)
 
+        # this will only raise an HTTPError if one occurred during our request, otherwise it will do nothing.
+        r.raise_for_status()
+
         return r.json()
 
 
