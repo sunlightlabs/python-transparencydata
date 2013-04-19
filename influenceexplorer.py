@@ -4,8 +4,7 @@ InfluenceExplorer.com.
 """
 
 
-import urllib2
-import urllib
+import requests
 try:
     import json
 except ImportError:
@@ -63,11 +62,11 @@ class InfluenceExplorer(object):
 
         params.update({'apikey': self.api_key})
 
-        full_url = self.base_url + path + '?' + urllib.urlencode(params)
+        full_url = self.base_url + path
 
-        fp = urllib2.urlopen(full_url)
+        r = requests.get(full_url, params=params)
 
-        return json.loads(fp.read())
+        return r.json()
 
 
 class SubAPI(object):
