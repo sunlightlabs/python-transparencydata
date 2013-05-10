@@ -49,6 +49,7 @@ class InfluenceExplorer(object):
         self.pol = Politician(self)
         self.indiv = Individual(self)
         self.org = Organization(self)
+        self.summaries = Summaries(self)
 
 
     def _get_url_json(self, path, cycle=None, limit=None, **params):
@@ -69,7 +70,16 @@ class InfluenceExplorer(object):
 class SubAPI(object):
     def __init__(self, main_api):
         self._get_url_json = main_api._get_url_json
-        
+
+class Summaries(SubAPI):
+    """
+    Methods related to obtaining aggregate information for groups corresponding
+    to main site nav
+    """
+
+    def summarize(self, entity_type, indicator, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        return self._get_url_json('aggregates/summary/%s/%s.json'%(entity_type,indicator),cycle)
+
 
 class Entities(SubAPI):
     """
