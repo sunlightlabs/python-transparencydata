@@ -101,6 +101,17 @@ class Entities(SubAPI):
         else:
             return self._get_url_json('entities.json', search=query.encode('ascii', 'ignore'))
 
+    def adv_search(self, query, **kwargs):
+        """
+        Return entities with names matching the given query, with pagination
+        and filtering by metadata.
+        """
+        params = {'search': query.encode('ascii', 'ignore')}
+        for arg, val in kwargs.items():
+            params[arg] = ','.join(val) if type(val) in (tuple, list) else val
+
+        return self._get_url_json('entities/search.json', **params)
+
     _camp_fin_markers = ['contributor_count', 'recipient_count', 'independent_expenditure_amount', 'fec_summary_count']
     _lobbying_markers = ['lobbying_count']
     _spending_markers = ['grant_count', 'loan_count', 'contract_count']
