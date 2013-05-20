@@ -50,6 +50,7 @@ class InfluenceExplorer(object):
         self.indiv = Individual(self)
         self.org = Organization(self)
         self.map_ = Map(self)
+        self.summaries = Summaries(self)
 
 
     def _get_url_json(self, path, cycle=None, limit=None, **params):
@@ -76,6 +77,14 @@ class SubAPI(object):
     def __init__(self, main_api):
         self._get_url_json = main_api._get_url_json
 
+class Summaries(SubAPI):
+    """
+    Methods related to obtaining aggregate information for groups corresponding
+    to main site nav
+    """
+
+    def summarize(self, entity_type, indicator, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        return self._get_url_json('aggregates/summary/%s/%s.json'%(entity_type,indicator),cycle)
 
 class Entities(SubAPI):
     """
@@ -281,6 +290,8 @@ class Entities(SubAPI):
         if area in 'state federal'.split() and contributor_type in 'pac employee'.split():
             return self._get_url_json('aggregates/orgs/{}/{}/top_{}.json'.format(area, contributor_type, limit))
 
+    def top_n_industries_time_series(self, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
+        return self._get_url_json('aggregates/industries/top_{0}_industries_time_series.json'.format((limit)), cycle)
 
 
 class Politician(SubAPI):
@@ -477,6 +488,12 @@ class Organization(SubAPI):
         Only return data if entity is an industry.
         """
         return self._get_url_json('aggregates/industry/%s/orgs.json' % entity_id, cycle, limit)
+
+    def subindustry_totals(self,cycle=DEFAULT_CYCLE):
+        """
+        Return totals for all subindustries in a given cycle
+        """
+        return self._get_url_json('aggregates/industries/subindustry_totals.json', cycle=cycle)
 
     def fed_spending(self, entity_id, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         """
