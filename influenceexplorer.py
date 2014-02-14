@@ -86,6 +86,9 @@ class Summaries(SubAPI):
     def summarize(self, entity_type, indicator, cycle=DEFAULT_CYCLE, limit=DEFAULT_LIMIT):
         return self._get_url_json('aggregates/summary/%s/%s.json'%(entity_type,indicator),cycle)
 
+    def metadata(self, entity_type):
+        return self._get_url_json('entities/summary/%s.json'%(entity_type,))
+
 class Entities(SubAPI):
     """
     Methods related to searching, listing and ranking entities.
